@@ -5,18 +5,24 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
 	int size = 0;
 	List<String> keyword = new ArrayList<String>();
+	ListView list;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +57,12 @@ public class MainActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(List<String> result) {
-			for(int i=0;i<1000;i++){
-				result.add("hello");
-			}
-			MyAdapter adapter = new MyAdapter(MainActivity.this, 1001,result);
-			ListView list = (ListView) findViewById(R.id.list_view);
+			keyword=result;
+			
+			MyAdapter adapter = new MyAdapter(MainActivity.this, size,result);
+			list = (ListView) findViewById(R.id.list_view);
+			View footerView = ((LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer_content, null, false);
+			list.addFooterView(footerView);
 			list.setAdapter(adapter);
 			Log.d("keywordList", result.toString());
 			list.setOnScrollListener(new OnScrollListener() {
@@ -74,6 +81,27 @@ public class MainActivity extends Activity {
 					
 				}
 			});
+			list.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					    View id1=view.findViewById(R.id.footer_1);
+					    if(id1.getId()==R.id.footer_1){
+					        reLoad();	
+					    }
+				}
+			});
+			
+		}
+		public void reLoad(){
+			for(int i=0;i<10;i++){
+				keyword.add("hello");
+			}
+			size=size+10;
+			 MyAdapter adapter=new MyAdapter(MainActivity.this, size, keyword);
+			 list.setAdapter(adapter);
+			 list.setSelection(size-1);
 		}
 
 	}
